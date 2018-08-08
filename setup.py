@@ -29,7 +29,6 @@ setup(
         'netifaces',
         'pyudev',
         'python-hpssa',
-        'pystress',
         'lxml',
         'press',
         'six',
