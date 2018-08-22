@@ -21,3 +21,4 @@ from mercury_agent.procedures.megaraid import *
 from mercury_agent.procedures.misc import *
 from mercury_agent.procedures.press_native import *
 from mercury_agent.procedures.raid import *
+from mercury_agent.procedures.hardware_wiper import *
