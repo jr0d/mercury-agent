@@ -1,17 +1,20 @@
 import mock
 
-from tests.unit import base
-
+from mercury.common.helpers.cli import CLIResult
 from mercury_agent.procedures.stress import Stress
+
+from tests.unit import base
 
 
 class TestStress(base.MercuryAgentUnitTest):
 
-    def stress_test(self, stress_seconds=60):
-        mock_stress = mock.Mock()
+    @mock.patch('mercury_agent.hardware.raid.interfaces.megaraid.stress.cli')
+    def stress_test(self, mock_cli):
+        mock_cli.run.return_value = CLIResult('', '', 0)
+        mock_cli.find_in_path.return_value = '/usr/bin/stress'
 
-        Stress(stress_seconds)
+        s = Stress()
 
-        mock_stress.Stress(stress_seconds)
+        assert s.start(seconds=60)
 
 
