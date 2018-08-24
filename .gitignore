@@ -72,3 +72,5 @@ mercury-inventory.yaml
 mercury-log.yaml
 mercury-rpc.yaml
 
+.pytest_cache/
+.venv/

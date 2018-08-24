@@ -400,3 +400,6 @@ class RAIDActions(object):
 
         if level in ['10', '1+0', '50', '60'] and number_of_drives % 2:
             raise RAIDAbstractionException('RAID10/50/60 require an even number of drives')
+
+    def wipe(self):
+        raise NotImplementedError

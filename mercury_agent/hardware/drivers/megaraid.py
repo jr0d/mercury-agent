@@ -27,6 +27,7 @@ from mercury_agent.hardware.drivers import driver, PCIDriverBase
 from mercury_agent.hardware.raid.abstraction.api import RAIDActions, \
     RAIDAbstractionException
 from mercury_agent.hardware.raid.interfaces.megaraid.storcli import Storcli
+from mercury_agent.hardware.wipers.lsi import LSIWiper
 
 log = logging.getLogger(__name__)
 
@@ -438,6 +439,9 @@ class MegaRAIDActions(RAIDActions):
             )
 
         return results
+
+    def wipe(self):
+        LSIWiper().wipe()
 
 
 @driver()

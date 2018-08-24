@@ -20,6 +20,7 @@ from mercury_agent.configuration import get_configuration
 from mercury_agent.hardware import platform_detection
 from mercury_agent.hardware.drivers import driver, PCIDriverBase
 from mercury_agent.hardware.raid.abstraction.api import RAIDActions, RAIDAbstractionException
+from mercury_agent.hardware.wipers.hp import HPWiper
 
 
 class SmartArrayActions(RAIDActions):
@@ -291,6 +292,9 @@ class SmartArrayActions(RAIDActions):
                                      ','.join([self.assemble_drive(d)
                                                for d in target_drives]),
                                      array_letters)
+
+    def wipe(self):
+        HPWiper().wipe()
 
 
 @driver()
