@@ -12,6 +12,8 @@ agent:
     raid:
       storcli_path: storcli64
       hpssacli_path: hpssacli
+      clear_delay: 10
+    megacli_bin: /usr/local/sbin/megacli
 
 press:
   paths:

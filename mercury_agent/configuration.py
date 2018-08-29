@@ -84,6 +84,14 @@ def parse_options():
                              help_string='The location of the racadm binary',
                              default='racadm')
 
+    configuration.add_option('agent.hardware.megacli_bin',
+                             help_string='megacli binary',
+                             default='/usr/local/sbin/megacli')
+
+    configuration.add_option('agent.hardware.raid.clear_delay',
+                             help_string='Raid wipe sleep time',
+                             default=10)
+
     return configuration.scan_options()
 
 
