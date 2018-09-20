@@ -1,7 +1,8 @@
 import logging
+import os
 
 from multiprocessing import cpu_count
-from os import system, path
+
 
 from mercury_agent.capabilities import capability
 from mercury.common.helpers import cli
@@ -20,7 +21,7 @@ class Stress(object):
         Make sure the stress binary is found
         """
         self.stress_path = stress_path
-        if not path.exists(stress_path):
+        if not os.path.exists(stress_path):
             raise Exception('Stress binary not found at '
                             '{}.'.format(self.stress_path))
 
@@ -42,7 +43,7 @@ class Stress(object):
         The way the stress binary behaves makes it hard to kill
         """
         log.error('Killing Stress Process.')
-        system('killall stress')
+        os.system('killall stress')
 
     def cpu_stress(self, timeout):
         """

@@ -8,35 +8,41 @@ from tests.unit import base
 
 class TestStress(base.MercuryAgentUnitTest):
 
+    @mock.patch('mercury_agent.procedures.stress.os')
     @mock.patch('mercury_agent.procedures.stress.cli')
-    def test_memory_stress(self, mock_cli):
-        mock_cli.find_in_path.return_value = '/usr/bin/stress'
+    def test_get_system_memory(self, mock_os, mock_cli):
         s = Stress()
-        s.memory_stress = mock.Mock()
-        s.memory_stress.assert_called_with(seconds=60)
-        mock_cli.find_in_path.return_value = None
+        s.get_system_memory()
 
+        mock_cli.run()
+
+        mock_cli.run.assert_called_once()
+        mock_cli.return_value = CLIResult('1G', '', 0)
+
+    @mock.patch('mercury_agent.procedures.stress.os')
+    def test_kill_all(self, mock_os):
+        Stress()
+        mock_os.system()
+
+        mock_os.system.assert_called_once_with()
+        mock_os.return_value = CLIResult('', '', 0)
+
+    @mock.patch('mercury_agent.procedures.stress.os')
     @mock.patch('mercury_agent.procedures.stress.cli')
-    def test_cpu_stress(self, mock_cli):
-        mock_cli.find_in_path.return_value = '/usr/bin/stress'
+    def test_memory_stress(self, mock_os, mock_cli):
         s = Stress()
-        s.cpu_stress = mock.Mock()
-        s.cpu_stress.assert_called_with(seconds=60)
-        mock_cli.find_in_path.return_value = None
+        s.memory_stress(timeout=5)
 
+        mock_cli.run()
+
+        mock_cli.run.assert_called_once()
+
+    @mock.patch('mercury_agent.procedures.stress.os')
     @mock.patch('mercury_agent.procedures.stress.cli')
-    def test_get_system_memory(self, mock_cli):
-        mock_cli.run.return_value = CLIResult('', '', 0)
-        mock_cli.find_in_path.return_value = '/proc/meminfo'
+    def test_cpu_stress(self, mock_os, mock_cli):
         s = Stress()
+        s.cpu_stress(timeout=5)
 
-        assert s.get_system_memory() == '1234G'
-        mock_cli.run.return_value = CLIResult('1234G', '', 0)
+        mock_cli.run()
 
-    @mock.patch('mercury_agent.procedures.stress.cli')
-    def test_kill_all(self, mock_cli):
-        mock_cli.run.return_value = CLIResult('', '', 0)
-        s = Stress()
-
-        assert s.killall() == ''
-
+        mock_cli.run.assert_called_once()
