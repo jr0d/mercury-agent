@@ -33,10 +33,10 @@ class Stress(object):
         cmd = 'grep MemFree /proc/meminfo'
         result = cli.run(cmd)
 
-        if not result.stderr:
-            k = result.split()[1]
+        if not result.returncode:
+            k = result.stdout.split()[1].strip()
             g = int(k)/1024/1024
-            return '{}G'.format(g)
+            return '{}G'.format(int(g))
 
     def killall(self):
         """

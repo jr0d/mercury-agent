@@ -86,8 +86,6 @@ class PongService(object):
             'message': 'pong'
         }
         LOG.debug('PONG: %s' % _packet)
-        # Could lock up here if server died immediately after sending ping
-        # TODO: Lets test to find out what happens ^^
         self.socket.send(msgpack.packb(_packet))
 
     def run(self):
