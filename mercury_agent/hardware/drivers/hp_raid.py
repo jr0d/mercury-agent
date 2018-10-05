@@ -13,14 +13,13 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-from hpssa.hpssa import HPSSA
+from hpssa import HPSSA
 
 from mercury_agent.configuration import get_configuration
 
 from mercury_agent.hardware import platform_detection
 from mercury_agent.hardware.drivers import driver, PCIDriverBase
 from mercury_agent.hardware.raid.abstraction.api import RAIDActions, RAIDAbstractionException
-from mercury_agent.hardware.wipers.hp import HPWiper
 
 
 class SmartArrayActions(RAIDActions):
@@ -293,8 +292,14 @@ class SmartArrayActions(RAIDActions):
                                                for d in target_drives]),
                                      array_letters)
 
-    def wipe(self):
-        HPWiper().wipe()
+    def erase(self, adapter, drives, method='fast'):
+        raise NotImplementedError
+
+    def get_erase_status(self, adapter):
+        raise NotImplementedError
+
+    def erase_in_progress(self, adapter):
+        raise NotImplementedError
 
 
 @driver()
@@ -328,7 +333,6 @@ class SmartArrayDriver(PCIDriverBase):
         adapters = []
         for idx in range(len(self.handler.hpssa.adapters)):
             _a = dict(**self.handler.get_adapter_info(idx))
-            adapter_obj = self.handler.hpssa.adapters[idx]
             _a.update({
                 'adapter_handler': self.name
             })
