@@ -163,30 +163,19 @@ class RAIDActions(object):
 
     def create_logical_drive(self, adapter, level, drives=None, size=None, array=None):
         """
-
         :param adapter:
         :type adapter: int
         :param level: 0, 1, 5, 6, 10, 1+0, 50, 60
         :type level: str
-        :param drives: drives should be referenced as 0 based comma separated indexes, ranges,
-            or a combination of both. For example::
-
-                0, 1, 2, 3
-                    or
-                0-3
-                    or
-                0, 2, 4-8, 9, 10
-
-            When using a range, both the lower and upper bounds are inclusive
-
-            Another option is to use all or unassigned. `all` requires that all drives on the
-            adapter are not part of the array. `unassigned` will select all drives not currently
-            members of an array or participating as spares
-        :param size: Size can be specified in bytes (int), a string using SI or IEC standards,
-        a percent of total space, or a percent of free space available. If no size is listed,
-        all available space will be used
+        :param drives: drives should be referenced as 0 based comma separated indexes, ranges, or
+        a combination of both. When using a range, both the lower and upper bounds are inclusive.
+        Another option is to use all or unassigned. `all` requires that all drives on the adapter
+        are not part of the array. `unassigned` will select all drives not currently members of an
+        array or participating as spares
+        :param size: Size can be specified in bytes (int), a string using SI or IEC standards, a
+        percent of total space, or a percent of free space available. If no size is listed, all
+        available space will be used
         :param array: An index of an existing array we are updating
-        :return:
         """
 
         # TODO: Add span support
@@ -263,7 +252,6 @@ class RAIDActions(object):
 
         return self.get_all_drives_from_adapter(
             self.get_adapter_info(adapter_index))
-
 
     def get_unassigned(self, adapter_index):
         drives = self.get_all_drives(adapter_index)
@@ -401,5 +389,23 @@ class RAIDActions(object):
         if level in ['10', '1+0', '50', '60'] and number_of_drives % 2:
             raise RAIDAbstractionException('RAID10/50/60 require an even number of drives')
 
-    def wipe(self):
+    def erase(self, adapter, drives, method='fast'):
+        """
+
+        :param adapter:
+        :param drives:
+        :param method:
+        :return:
+        """
+        raise NotImplementedError
+
+    def get_erase_status(self, adapter):
+        """
+
+        :param adapter:
+        :return:
+        """
+        raise NotImplementedError
+
+    def erase_in_progress(self, adapter):
         raise NotImplementedError

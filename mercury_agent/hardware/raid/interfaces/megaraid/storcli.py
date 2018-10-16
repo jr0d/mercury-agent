@@ -1,6 +1,10 @@
+import logging
 import json
 
 from mercury.common.helpers import cli
+
+
+log = logging.getLogger(__name__)
 
 
 class StorcliException(Exception):
@@ -203,3 +207,34 @@ value is automatically chosen.(0 to 16)
             slot,
             dgs and ' DGs={}'.format(dgs) or ''
         ))
+
+    def start_erase(self, controller, enclosure, slot, pattern='simple'):
+        log.info('Scheduling erase [%s] operation on /c%s/e%s/s%s',
+                 pattern, controller, enclosure, slot)
+        data = self.run('/c{}/e{}/s{} start erase {} J'.format(
+            controller,
+            enclosure,
+            slot,
+            pattern
+        ))['Controllers'][0]
+        self.check_command_status(data)
+
+    def stop_erase(self, controller, enclosure, slot):
+        log.info('Cancelling erase operation on /c%s/e%s/s%s',
+                 controller, enclosure, slot)
+        data = self.run('/c{}/e{}/s{} stop erase J'.format(
+            controller,
+            enclosure,
+            slot
+        ))['Controllers'][0]
+        self.check_command_status(data)
+        return data['Response Data']
+
+    def show_erase(self, controller, enclosure, slot):
+        data = self.run('/c{}/e{}/s{} show erase J'.format(
+            controller,
+            enclosure,
+            slot
+        ))['Controllers'][0]
+        self.check_command_status(data)
+        return data['Response Data']
