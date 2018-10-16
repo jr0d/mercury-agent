@@ -27,7 +27,6 @@ from mercury_agent.hardware.drivers import driver, PCIDriverBase
 from mercury_agent.hardware.raid.abstraction.api import RAIDActions, \
     RAIDAbstractionException
 from mercury_agent.hardware.raid.interfaces.megaraid.storcli import Storcli
-from mercury_agent.hardware.wipers.lsi import LSIWiper
 
 log = logging.getLogger(__name__)
 
@@ -440,8 +439,44 @@ class MegaRAIDActions(RAIDActions):
 
         return results
 
-    def wipe(self):
-        LSIWiper().wipe()
+    def erase(self, adapter, drives, method='fast'):
+        log.info(
+            'Starting hardware erase on adapter: %s, drives: %s, method: %s',
+            adapter, drives, method)
+
+        adapter_info = self.get_adapter_info(adapter)
+        controller_id = self.get_controller_id(adapter_info)
+
+        if drives == 'all':
+            self.storcli.start_erase(controller_id, 'all', 'all')
+        else:
+            enclosure_drive_map = {}
+            target_drives = self.get_drives_from_selection(0, drives)
+            for _drive in target_drives:
+                enclosure, slot = (int(_) for _ in _drive['extra']['address'].split(':'))
+                if enclosure not in enclosure_drive_map:
+                    enclosure_drive_map[enclosure] = [slot]
+                else:
+                    enclosure_drive_map[enclosure].append(slot)
+
+            for enclosure in enclosure_drive_map.keys():
+                self.storcli.start_erase(
+                    controller_id, enclosure, ','.join(enclosure_drive_map[enclosure]))
+
+    def get_erase_status(self, adapter):
+        log.info('Getting hardware erase status on adapter: %s, drives: %s',
+                 adapter)
+        adapter_info = self.get_adapter_info(adapter)
+        controller_id = self.get_controller_id(adapter_info)
+
+        return self.storcli.show_erase(controller_id, 'all', 'all')
+
+    def erase_in_progress(self, adapter):
+        log.info('Checking erase status')
+        for drive in self.get_erase_status(adapter):
+            if drive['Status'] == 'In Progress':
+                return True
+        return False
 
 
 @driver()
