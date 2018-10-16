@@ -29,7 +29,7 @@ def open_target_sync(target):
 def write_random_signatures(target, target_size_bytes, number):
     signature_map = [
         (uuid.uuid4().bytes, random.randint(0, int(
-            (target_size_bytes-16)/16)*16))
+            (target_size_bytes-16)/16))*16)
         for _ in range(number)]
 
     target_fd = open_target_sync(target)
