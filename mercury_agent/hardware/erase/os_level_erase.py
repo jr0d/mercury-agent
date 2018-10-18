@@ -127,4 +127,5 @@ def erase(target, method='zero', buffer_size_bytes=4194304,
         seconds=round(completed_at - start)), speed_stat)
 
     return {'start_time': start, 'completed_at': completed_at,
-            'target_size': target_size}
+            'target_size': target_size, 'target': target,
+            'speed': f'{speed_stat} MB/s'}
