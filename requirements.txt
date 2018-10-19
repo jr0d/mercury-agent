@@ -1,5 +1,5 @@
 mercury-core
 python-hpssa
-press==0.5.1
+press==0.5.2
 msgpack-python
 pyzmq
