@@ -15,15 +15,17 @@
 
 from .inspector import inspectors, late_inspectors, expose, expose_late
 
+from .agent_info import agent_inspector
 from .cpu import cpu_inspector
 from .dmi import dmi_inspector
 from .interfaces import interface_inspector
-from .os_storage import os_storage_inspector
 from .mem import memory_inspector
+from .os_storage import os_storage_inspector
 from .pci import pci_inspector
 from .routes import route_inspector
 
 # Late
 
-from .raid import raid_inspector
 from .bmc import bmc_inspector
+from .health import system_health_inspector
+from .raid import raid_inspector
