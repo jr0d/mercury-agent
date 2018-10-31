@@ -54,7 +54,7 @@ class OMReport(object):
             raise OMReportRunException('Had trouble running {0}'.format(full_command), res,
                                        res.stderr)
 
-        return res
+        return res.encode()
 
     @property
     def about(self):

@@ -210,7 +210,7 @@ class HPASMCLI:
         """
         data = self.hpasm_run('SHOW DIMM')
 
-        # Knocks off the first three lines then splits on double spaces
+        # Knocks off the first three lines then splits on double \n
         segments = '\n'.join(data.splitlines()[3:]).split("\n\n")
 
         details = []

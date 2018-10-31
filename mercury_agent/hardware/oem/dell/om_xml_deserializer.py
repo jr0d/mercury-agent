@@ -1,4 +1,4 @@
-from io import StringIO
+from io import BytesIO
 from lxml import etree
 
 
@@ -12,22 +12,22 @@ class XLoader(object):
 
     @property
     def root(self):
-        return etree.parse(StringIO(self.xml_data)).getroot()
+        return etree.parse(BytesIO(self.xml_data)).getroot()
 
 
 class XMLAbout(dict):
     def __init__(self, oma):
         super(XMLAbout, self).__init__()
         about = oma.find('About')
-        if not about is not None:
+        if about is None:
             raise XMLError('About element is missing.')
 
         self['components'] = list()
         for child in about:
             if child.tag == 'Component':
                 self._add_component(child)
-                continue
-            self[child.tag] = child.text.strip()
+            else:
+                self[child.tag] = child.text.strip()
 
     def _add_component(self, component):
         d = dict()
@@ -54,7 +54,7 @@ class XMLChassisStatus(dict):
         ('powersupply', 'PowerSupplyObj', 'PSLocation'),
         ('powermonitoring', 'PowerConsumptionDataObj', 'Identifier'),
         ('processor', 'DevProcessorObj', 'Brand'),
-        ('esmlog', 'LogObj', 'Hardware (ESM) Log'),
+        ('esmlog', 'LogObj', 'HardwareLog'),
         ('memory', 'MemDevObj', 'Memory'),
         ('batteries', 'BatteryObj', 'ProbeLocation'),
         ('sdcard', 'SDCard', 'SDCardLocation')
@@ -79,13 +79,10 @@ class XMLChassisStatus(dict):
             sensor_elements = element.findall(obj)
             for sensor_element in sensor_elements:
                 sensor_dict = dict()
-                try:
-                    description_element = sensor_element.find(obj_desc)
-                    if description_element is not None:
-                        sensor_dict['description'] = description_element.text
-                    else:
-                        sensor_dict['description'] = obj_desc
-                except KeyError:
+                description_element = sensor_element.find(obj_desc)
+                if description_element is not None:
+                    sensor_dict['description'] = description_element.text
+                else:
                     sensor_dict['description'] = obj_desc
 
                 sensor_dict['status'] = sensor_element.find(self.objstatus_tag).text
