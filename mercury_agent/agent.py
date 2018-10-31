@@ -117,7 +117,6 @@ class Agent(object):
 
         agent_service = AgentService(self.agent_bind_address,
                                      self.rpc_backend_url)
-        agent_service.bind()
         agent_service.start()
 
 
