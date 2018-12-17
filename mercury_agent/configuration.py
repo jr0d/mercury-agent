@@ -88,6 +88,18 @@ def parse_options():
                              help_string='megacli binary',
                              default='/usr/local/sbin/megacli')
 
+    configuration.add_option('agent.hardware.mce_threshold',
+                             help_string='The maximum number of corrected machine '
+                                         'check exceptions which can occur before '
+                                         'an error is raised',
+                             default=20,
+                             special_type=int)
+
+    configuration.add_option('agent.hardware.oem.hp.hpasmcli_path',
+                             help_string='The path of the hpasmcli binary',
+                             env_variable='HPASMCLI_PATH',
+                             default='hpasmcli')
+
     return configuration.scan_options()
 
 

@@ -41,6 +41,7 @@ def cpu_inspector():
 
     return _cpu
 
+
 if __name__ == '__main__':
     from pprint import pprint
 
