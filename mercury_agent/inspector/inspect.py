@@ -76,3 +76,8 @@ def inspect():
     global_device_info.update(**collected)
 
     return global_device_info
+
+
+if __name__ == '__main__':
+    from pprint import pprint
+    pprint(inspect())

@@ -17,7 +17,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='mercury-agent',
-    version='0.1.5',
+    version='0.1.6',
     packages=find_packages(exclude=['tests']),
     url='http://www.mercurysoft.io',
     license='Apache-2.0',

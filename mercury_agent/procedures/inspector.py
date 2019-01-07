@@ -14,7 +14,10 @@
 #    limitations under the License.
 
 from mercury_agent.capabilities import capability
+from mercury_agent.configuration import get_configuration
 from mercury_agent.inspector import inspect
+from mercury_agent.inspector.inspect import global_device_info
+from mercury_agent.inspector.inspectors import health
 
 
 @capability('inspector', description='Run inspector')
@@ -24,3 +27,24 @@ def inspector():
     :return: results
     """
     return inspect.inspect()
+
+
+@capability('check_hardware', description='Check hardware for errors')
+def check_hardware():
+    """
+    Checks hardware for inconsistencies and defects. Returns a list of discovered critical errors.
+    :return:
+    """
+    configuration = get_configuration().agent
+    errors = []
+    _health_data = health.system_health_inspector(global_device_info)
+    if _health_data['corrected_hardware_event_count'] >= configuration.hardware.mce_threshold:
+        errors.append(
+            'MCE count is {} which is above the configured threshold of {}'.format(
+                _health_data['corrected_hardware_event_count'],
+                configuration.hardware.mce_threshold))
+
+    return {
+        'errors': errors,
+        'error_count': len(errors)
+    }

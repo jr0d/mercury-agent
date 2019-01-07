@@ -25,7 +25,8 @@ class Stress(object):
             raise Exception('Stress binary not found at '
                             '{}.'.format(self.stress_path))
 
-    def get_system_memory(self):
+    @staticmethod
+    def get_system_memory():
         """
         Gets the amount of system memory in a server.
         """
@@ -85,8 +86,13 @@ class Stress(object):
 
 @capability('memory_stress_test',
             description='Run stress on memory for specified amount of time',
-            kwarg_names=['stress_seconds'], serial=False, timeout=3600)
-def memory_stress_test(stress_seconds=60):
+            num_args=1, serial=False, timeout=3600)
+def memory_stress_test(stress_seconds):
+    """
+
+    :param stress_seconds:
+    :return:
+    """
     log.info('Starting stress test on CPU and Memory for '
              '{} seconds'.format(stress_seconds))
     stress_tester = Stress()
@@ -95,8 +101,13 @@ def memory_stress_test(stress_seconds=60):
 
 @capability('cpu_stress_test',
             description='Run stress on cpu for specified amount of time',
-            kwarg_names=['stress_seconds'], serial=False, timeout=3600)
-def cpu_stress_test(stress_seconds=60):
+            num_args=1, serial=False, timeout=3600)
+def cpu_stress_test(stress_seconds):
+    """
+
+    :param stress_seconds:
+    :return:
+    """
     log.info('Starting stress test on CPU and Memory for '
              '{} seconds'.format(stress_seconds))
     stress_tester = Stress()
