@@ -7,9 +7,9 @@ from mercury_agent.inspector.inspectors import expose
 def agent_inspector():
     _info = {
         'agent_version':
-            pkg_resources.get_distribution('mercury-agent').version,
+        pkg_resources.get_distribution('mercury-agent').version,
         'mercury_version':
-            pkg_resources.get_distribution('mercury-core').version,
+        pkg_resources.get_distribution('mercury-core').version,
     }
 
     try:
