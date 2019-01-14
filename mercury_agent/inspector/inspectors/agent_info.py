@@ -7,10 +7,18 @@ from mercury_agent.inspector.inspectors import expose
 def agent_inspector():
     _info = {
         'agent_version':
-            pkg_resources.get_distribution('mercury-agent').version,
+        pkg_resources.get_distribution('mercury-agent').version,
         'mercury_version':
-            pkg_resources.get_distribution('mercury-core').version
+        pkg_resources.get_distribution('mercury-core').version,
     }
+
+    try:
+        with open('/etc/hostname') as fp:
+            hostname = fp.read().strip()
+    except (IOError, OSError):
+        hostname = None
+
+    _info['hostname'] = hostname
     return _info
 
 
