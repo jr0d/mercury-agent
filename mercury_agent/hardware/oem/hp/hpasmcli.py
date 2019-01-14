@@ -1,4 +1,9 @@
+import re
+
 from mercury.common.helpers import cli
+
+
+invalid_charcaters = '.$ /\\\\'
 
 
 class HPAsmException(Exception):
@@ -17,15 +22,16 @@ class HPASMCLI:
             raise HPAsmException('Could not find hpasmcli binary')
 
     @staticmethod
-    def snake_case(data):
-        return data.replace(' ', '_').lower()
+    def fix_key_names(data):
+        rgx = re.compile('[{}]'.format(invalid_charcaters))
+        return rgx.sub('_', data.strip(invalid_charcaters).lower())
 
     @staticmethod
     def convert_digit(data):
         return int(data) if data.isdigit() else data
 
     def hpasm_run(self, command):
-        result = cli.run('{} -s \'{}\''.format(self.hpasmcli, command), raw=True)
+        result = cli.run('{} -s \'{}\''.format(self.hpasmcli, command))
         if result.returncode:
             raise HPAsmException('Error running command: {}'.format(command))
         return result
@@ -88,7 +94,7 @@ class HPASMCLI:
         processor_index = -1
         for line in [_ for _ in data.splitlines() if _]:
             label, value = (_.strip() for _ in line.split(':', 1))
-            label = self.snake_case(label)
+            label = self.fix_key_names(label)
             value = self.convert_digit(value)
             if embedded_nics_context or processor_context:
                 if line[0] != '\t':
@@ -220,7 +226,7 @@ class HPASMCLI:
                 details.append(dimm_info)
                 for line in segment.splitlines():
                     key, value = (_.strip() for _ in line.split(':', 1))
-                    dimm_info[self.snake_case(key)] = self.convert_digit(value)
+                    dimm_info[self.fix_key_names(key)] = self.convert_digit(value)
         return details
 
     def show_powersupply(self):
@@ -234,10 +240,9 @@ class HPASMCLI:
                 ps_data = {}
                 continue
             key, value = (_.strip() for _ in line.split(':', 1))
-            ps_data[self.snake_case(key)] = value
+            ps_data[self.fix_key_names(key)] = value
         power_supplies.append(ps_data)
         return power_supplies
 
     def clear_iml(self):
         return self.hpasm_run('CLEAR IML')
-

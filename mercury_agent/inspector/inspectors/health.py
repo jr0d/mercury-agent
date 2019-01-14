@@ -10,7 +10,7 @@ from mercury_agent.inspector.inspectors import expose_late
 log = logging.getLogger(__name__)
 
 
-def _qc_hp(_health, _oem_details, log_error):
+def _qc_hp(_oem_details, log_error):
     _oem_details['target'] = 'HP'
     hpasm = hpasmcli.HPASMCLI(
         get_configuration().agent.hardware.oem.hp.hpasmcli_path)
@@ -64,8 +64,8 @@ def system_health_inspector(device_info):
     _oem_details = {}
     _health['oem_details'] = _oem_details
 
-    if platform_detection.is_hp(device_info['dmi']):
-        _qc_hp(_health, _oem_details, log_error)
+    if platform_detection.is_hp(device_info.get('dmi', {})):
+        _qc_hp(_oem_details, log_error)
 
     return _health
 
