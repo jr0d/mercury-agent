@@ -50,11 +50,13 @@ def parse_options():
                              one_of=['simple', 'udhcpd', 'routing_table'])
 
     configuration.add_option('agent.remote.backend_url',
+                             proc_cmdline_argument='MERCURY_BACKEND',
                              help_string='The ZeroMQ URL of the backend '
                                          'service',
                              required=True)
 
     configuration.add_option('agent.remote.log_service_url',
+                             proc_cmdline_argument='MERCURY_LOG_SERVICE',
                              help_string='Optional logging service zURL')
 
     configuration.add_option('agent.hardware.raid.storcli_path',
