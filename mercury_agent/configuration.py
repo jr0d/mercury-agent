@@ -17,7 +17,6 @@ import logging
 
 from mercury.common.configuration import MercuryConfiguration
 
-
 log = logging.getLogger(__name__)
 
 # Helpers
@@ -57,7 +56,8 @@ def parse_options():
 
     configuration.add_option('agent.remote.log_service_url',
                              proc_cmdline_argument='MERCURY_LOG_SERVICE',
-                             help_string='Optional logging service zURL')
+                             help_string='Optional logging service zURL',
+                             default=None)
 
     configuration.add_option('agent.hardware.raid.storcli_path',
                              cli_argument='--storcli_path',
@@ -75,6 +75,7 @@ def parse_options():
                              help_string='The address which will be advertised'
                                          'to the backend for communication with'
                                          'this agent')
+
     configuration.add_option('agent.pong_log_level',
                              cli_argument='--pong-log-level',
                              default='ERROR',

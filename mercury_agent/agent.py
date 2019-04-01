@@ -17,7 +17,8 @@ import logging
 import time
 
 from mercury.common.clients.rpc.backend import BackEndClient
-from mercury.common.exceptions import MercuryCritical, MercuryGeneralException
+from mercury.common.exceptions import (
+    MercuryCritical, MercuryGeneralException, MercuryConfigurationError)
 
 from mercury_agent.capabilities import runtime_capabilities
 from mercury_agent.configuration import get_configuration
@@ -47,7 +48,7 @@ class Agent(object):
         :param configuration:
         """
         self.configuration = configuration
-        self.agent_bind_address = configuration.agent.service_bind_address
+        self.agent_bind_address = configuration.agent.bind_address
         self.pong_bind_address = configuration.agent.pong_bind_address
 
         self.rpc_backend_url = self.configuration.agent.remote.backend_url
@@ -100,10 +101,10 @@ class Agent(object):
             break
 
         # LogHandler
-
-        log.info('Injecting MercuryID for remote logging')
-        self.log_handler.set_mercury_id(device_info['mercury_id'])
-        log.info('Injection completed')
+        if self.log_handler is not None:
+            log.info('Injecting MercuryID for remote logging')
+            self.log_handler.set_mercury_id(device_info['mercury_id'])
+            log.info('Injection completed')
 
         # AsyncInspectors
         try:
@@ -124,14 +125,7 @@ def setup_logging(configuration):
     logging.basicConfig(level=configuration.logging.level,
                         format=configuration.logging.format)
 
-    fh = logging.FileHandler(configuration.agent.log_file)
-
-    fh.setLevel(configuration.logging.level)
-    formatter = logging.Formatter(configuration.logging.format)
-    fh.setFormatter(formatter)
-
     mercury_logger = logging.getLogger('mercury_agent')
-    mercury_logger.addHandler(fh)
     mercury_logger.info('Starting Agent')
 
     # Quiet these down
@@ -140,15 +134,23 @@ def setup_logging(configuration):
     logging.getLogger('hpssa._cli').setLevel(logging.ERROR)
 
     # Configure the remote logging handler
-    mh = MercuryLogHandler(configuration.agent.remote.log_service_url)
-    mercury_logger.addHandler(mh)
-
-    # Return this so that we can inject the mercury_id once we have it
-    return mh
+    log_service_url = configuration.agent.remote.log_service_url
+    if log_service_url:
+        mh = MercuryLogHandler(configuration.agent.remote.log_service_url)
+        mercury_logger.addHandler(mh)
+        return mh
+    else:
+        return None
 
 
 def main():
-    configuration = get_configuration()
+    try:
+        configuration = get_configuration()
+    except MercuryConfigurationError as mce:
+        import sys
+        print("Error in configuration: {}".format(mce), file=sys.stderr)
+        sys.exit(1)
+
     mercury_handler = setup_logging(configuration)
     agent = Agent(configuration, mercury_handler)
     agent.run(configuration.agent.dhcp_ip_source)
