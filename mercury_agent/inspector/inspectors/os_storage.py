@@ -14,6 +14,7 @@
 #    limitations under the License.
 
 import logging
+import re
 
 from press.helpers import parted
 
@@ -31,6 +32,13 @@ def get_disk_type(dev):
     except (IOError, OSError):
         log.warning('Could not parse sysfs for %s', dev)
         return 'unknown'
+
+
+def _fix_udev_device_for_mongo(udev_device):
+    rgx = re.compile('[{}]'.format('$. '))
+    for k in udev_device:
+        if rgx.search(k):
+            udev_device[rgx.sub('_', k)] = udev_device.pop(k)
 
 
 @inspector.expose('os_storage')
@@ -55,7 +63,11 @@ def os_storage_inspector():
         else:
             # Fibre channel!
             device_info['media_type'] = 'external'
+
         os_storage.append(device_info)
+
+        _fix_udev_device_for_mongo(udev_device)
+
     return os_storage
 
 
