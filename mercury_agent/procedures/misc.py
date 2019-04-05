@@ -17,10 +17,10 @@ import logging
 import subprocess
 
 
-from mercury_agent.capabilities import capability
 from mercury.common.helpers.cli import run
-from mercury.common.helpers.util import download_file
 
+from mercury_agent.capabilities import capability
+from mercury_agent.procedures.lib import download_file
 
 log = logging.getLogger(__name__)
 
@@ -66,7 +66,8 @@ def runner_async(command, shell=True):
     subprocess.Popen('{}'.format(command), shell=shell)
 
 
-@capability('kexec', 'kexec into kernel at supplied location', kwarg_names=['kernel', 'initrd', 'options'],
+@capability('kexec', 'kexec into kernel at supplied location',
+            kwarg_names=['kernel', 'initrd', 'options'],
             no_return=True, serial=True)
 def kexec(kernel='', initrd='', options=None, kernel_type='bzImage'):
     """
@@ -108,6 +109,3 @@ def reload(kernel_url, initrd_url):
         options = fp.readline().split()
 
     kexec(kernel=kernel_file, initrd=initrd_file, options=options)
-
-
-
