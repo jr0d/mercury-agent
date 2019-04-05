@@ -17,15 +17,63 @@
 import logging
 import os
 
+import requests
+
+from lxml import objectify as xml_objectify
+from lxml import etree
+from mercury.common.helpers import cli
+from mercury.common.exceptions import MercuryFirmwareException
+
 from mercury_agent.capabilities import capability
 from mercury_agent.hardware.platform_detection import is_dell
 from mercury_agent.inspector.inspect import global_device_info
-from mercury.common.exceptions import MercuryFirmwareException
-from mercury.common.helpers.util import extract_tar_archive, download_file, cli, xml_to_dict
 
 
 log = logging.getLogger(__name__)
 firmware_path = '/tmp/dell/firmware'
+
+
+def extract_tar_archive(tarball_path, extract_path):
+    os.makedirs(extract_path, exist_ok=True)
+    cmd = 'tar --strip-components=1 -xvf {0} -C {1}'.format(tarball_path,
+                                                            extract_path)
+    return cli.run(cmd)
+
+
+def download_file(url, download_path):
+    try:
+        r = requests.get(url, stream=True)
+    except requests.RequestException as err:
+        raise err
+
+    if os.path.isfile(download_path):
+        os.remove(download_path)
+
+    with open(download_path, 'wb') as f:
+        for _chunk in r.iter_content(1024 ** 2):
+            if _chunk:
+                f.write(_chunk)
+
+
+def xml_to_dict(xml_str, xml_element):
+    """ Convert xml to dict """
+
+    def xml_to_dict_recursion(xml_object):
+        dict_object = xml_object.__dict__
+        if not dict_object:
+            return xml_object
+        for key, value in dict_object.items():
+            dict_object[key] = xml_to_dict_recursion(value)
+        return dict_object
+
+    # noinspection PyUnresolvedReferences
+    parser = etree.XMLParser(encoding='utf-8')
+    xml_obj = xml_objectify.fromstring(xml_str, parser=parser)
+    xml_element_dict = []
+    for i in xml_obj.findall("{0}".format(xml_element)):
+        x = xml_to_dict_recursion(i)
+        xml_element_dict.append(x)
+    return xml_element_dict
 
 
 def vendor_is_dell():
