@@ -1,5 +1,5 @@
 mercury-core>=0.1.6
 python-hpssa>=0.0.13
-press>=0.5.3
+press>=0.5.8
 msgpack-python==0.5.6
 pyzmq==17.0.0
